@@ -1,0 +1,5 @@
+results/
+result
+result-*
+__pycache__/
+.mypy_cache/

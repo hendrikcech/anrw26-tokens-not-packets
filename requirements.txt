@@ -1,0 +1,8 @@
+matplotlib
+numpy
+pandas
+pysimdjson
+zstandard
+tqdm
+scipy
+mininet

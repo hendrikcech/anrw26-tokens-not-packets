@@ -1,0 +1,44 @@
+version: '3'
+
+vars:
+  ACK_REGEX: '\/(?P<rtt>[0-9-]+)_(?P<bw>[0-9-]+)_(?P<scheduler>[A-Za-z0-9-,]+)_(?P<bytes>[0-9]+)\/(?P<rep>[0-9]+)\/.*sqlog.*'
+
+tasks:
+  # --- 1. Run the measurements ---
+  measure:
+     desc: Run the quicheperf measurements
+     cmds:
+       - task: mn-run:sct
+       - task: mn-run:ack
+
+  mn-run:*:
+    desc: Run a experiment with mn_runner.py; deletes previous experiment results
+    vars:
+      EXPERIMENT: '{{index .MATCH 0}}'
+      RESULTS: results
+      EXP_PATH: '{{joinPath .RESULTS .EXPERIMENT}}'
+      USER:
+        sh: whoami
+    prompt: Really delete '{{.EXP_PATH}}' and run mn_runner.py '{{.EXPERIMENT}}'?
+    cmds:
+      - rm -rf '{{.EXP_PATH}}' || true
+      - sudo python3 mn_runner.py '{{.USER}}' '{{.EXPERIMENT}}' --reps 30
+
+  # --- 2. Plot the measured data ---
+  plot:
+    desc: Plot the measured data
+    cmds:
+      - task: sct
+      - task: ack-selected
+
+  sct:
+    desc: Plot the stream completion times of different schedulers
+    cmds:
+      - mkdir -p results/
+      - python3 stream_completion_time.py results/sct/10-100*/*/*server.sqlog* --group scheduler --regex "\/.*_(?P<scheduler>[A-Za-z-]+)\/(?P<rep>[0-9]+)\/.*sqlog.*" -o results/sct_10-100.pdf
+
+  ack-selected:
+    desc: Only plot rtt=25-10	bw=10-10	bytes=100000
+    cmds:
+      - mkdir -p results/
+      - python3 stream_completion_time.py results/ack/25-10_10-10_*,fscheduler*_100000/*/*server.sqlog* --regex '{{.ACK_REGEX}}' --group scheduler rtt bw bytes --hide-ylabel -o results/ack_selected.pdf

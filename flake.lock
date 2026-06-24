@@ -49,11 +49,37 @@
         "type": "github"
       }
     },
+    "quiche": {
+      "flake": false,
+      "locked": {
+        "path": "./quiche",
+        "type": "path"
+      },
+      "original": {
+        "path": "./quiche",
+        "type": "path"
+      },
+      "parent": []
+    },
+    "quicheperf": {
+      "flake": false,
+      "locked": {
+        "path": "./quicheperf",
+        "type": "path"
+      },
+      "original": {
+        "path": "./quicheperf",
+        "type": "path"
+      },
+      "parent": []
+    },
     "root": {
       "inputs": {
         "crane": "crane",
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "quiche": "quiche",
+        "quicheperf": "quicheperf"
       }
     },
     "systems": {
