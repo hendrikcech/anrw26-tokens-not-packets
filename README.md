@@ -13,3 +13,5 @@ TODO: bibtex
 - `nix develop -i -k HOME -k TERM -c task sct`
 
 - `nix develop -i -c bash --norc --noprofile`
+
+- using sudo: `/usr/bin/sudo -E env "PATH=$PATH" python3 mp_topo.py`

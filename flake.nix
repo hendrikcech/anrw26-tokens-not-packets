@@ -78,6 +78,52 @@
           mininet-python
         ]);
 
+        sudo-wrapper = pkgs.writeShellScriptBin "sudo" ''
+          if [ -x /run/wrappers/bin/sudo ]; then
+            REAL_SUDO=/run/wrappers/bin/sudo
+          elif [ -x /usr/bin/sudo ]; then
+            REAL_SUDO=/usr/bin/sudo
+          else
+            echo "sudo-wrapper: Could not find system sudo" >&2
+            exit 1
+          fi
+
+          # Parse sudo options to correctly place env PATH=$PATH before the command
+          args=()
+          while [[ $# -gt 0 ]]; do
+              case "$1" in
+                  -C|-g|-h|-p|-R|-r|-T|-t|-U|-u|--close-from|--group|--host|--prompt|--chroot|--role|--command-timeout|--type|--other-user|--user)
+                      args+=("$1" "$2")
+                      shift 2
+                      ;;
+                  --*=*)
+                      args+=("$1")
+                      shift
+                      ;;
+                  --)
+                      args+=("$1")
+                      shift
+                      break
+                      ;;
+                  -*)
+                      args+=("$1")
+                      shift
+                      ;;
+                  *)
+                      break
+                      ;;
+              esac
+          done
+
+          # Pass -E to preserve other environment variables (like PYTHONPATH)
+          # Explicitly invoke `env PATH=$PATH` to defeat `secure_path` in sudoers
+          if [ $# -eq 0 ]; then
+              exec "$REAL_SUDO" -E "''${args[@]}"
+          else
+              exec "$REAL_SUDO" -E "''${args[@]}" env "PATH=$PATH" "$@"
+          fi
+        '';
+
       in
       {
         packages = {
@@ -89,22 +135,10 @@
           drv = quicheperf_pkg;
         };
 
-        apps.mn_runner = flake-utils.lib.mkApp {
-          drv = pkgs.writeShellApplication {
-            name = "mn_runner";
-            runtimeInputs = with pkgs; [ pythonEnv ];
-            text = ''
-              export NIX_QUICHEPERF_EXE="${quicheperf_pkg}/bin/quicheperf"
-              exec python3 "$PWD/mn_runner.py" "$@"
-            '';
-          };
-        };
-
         devShells.default = craneLib.devShell {
           inputsFrom = [ quicheperf_pkg ];
           packages = with pkgs; [
             quicheperf_pkg
-
             pythonEnv
             cargo
             rustc
@@ -113,6 +147,7 @@
             mininet
             go-task
             bashInteractive
+            sudo-wrapper
             
             # mn-runner
             procps

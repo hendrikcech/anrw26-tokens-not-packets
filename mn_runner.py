@@ -154,9 +154,14 @@ def run_test(results_path, user, params):
     client = net.get('h1')
     server = net.get('h2')
 
-    env = dict(RUST_LOG="debug", # meaningless; it uses --logfile for logging
-               QLOGDIR=results_path,
-               STDERRDIR=results_path)
+    env = dict(
+        RUST_LOG="debug", # meaningless; it uses --logfile for logging
+        QLOGDIR=results_path,
+        STDERRDIR=results_path,
+        PATH=os.environ["PATH"],
+        )
+    # env = os.environ.copy()
+    # env.update(env_vars)
     server_env, client_env = env.copy(), env.copy()
     # client_env["SSLKEYLOGFILE"] = os.path.join(results_path, "key_client.log")
     # server_env["SSLKEYLOGFILE"] = os.path.join(results_path, "key_server.log")
