@@ -181,8 +181,9 @@ def run_test(results_path, user, params):
     #                          "-Z", user])
     p_tcpdump = None
 
-    server_cmd = ["sudo", "-u", user, "-E", "-s", "./mp_server.sh", "--"] + server_quicheperf_args
-    client_cmd = ["sudo", "-u", user, "-E", "-s", "./mp_client.sh", "--"] + client_quicheperf_args
+    base_dir = os.path.dirname(os.path.realpath(__file__))
+    server_cmd = ["sudo", "-u", user, "-E", "-s", os.path.join(base_dir, "mp_server.sh"), "--"] + server_quicheperf_args
+    client_cmd = ["sudo", "-u", user, "-E", "-s", os.path.join(base_dir, "mp_client.sh"), "--"] + client_quicheperf_args
 
     p_server = server.popen(server_cmd, env=server_env)
     time.sleep(1)

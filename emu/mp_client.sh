@@ -58,8 +58,6 @@ main() {
 
     parse "$@"
 
-    env > client_env.log
-
     if [ "$MODE" = 'perf' ]; then
         execute "$(cmd_perf)"
     else

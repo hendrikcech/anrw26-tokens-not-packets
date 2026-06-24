@@ -149,7 +149,7 @@
             bashInteractive
             sudo-wrapper
             
-            # mn-runner
+            # emu dependencies
             procps
             iproute2
             openvswitch
