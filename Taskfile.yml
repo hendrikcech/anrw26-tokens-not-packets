@@ -16,7 +16,7 @@ tasks:
     desc: Plot Figure 4 (a) with the data shown in the paper.
     cmds:
       - mkdir -p '{{.RESULTS}}'
-      - python3 figures/stream_completion_time.py '{{.RESULTS}}'/sct-paper/10-100*/*/*server.sqlog* --group scheduler --regex "\/.*_(?P<scheduler>[A-Za-z-]+)\/(?P<rep>[0-9]+)\/.*sqlog.*" -o '{{.RESULTS}}/sct_10-100.pdf'
+      - python3 figures/stream_completion_time.py '{{.RESULTS}}'/sct-paper/10-100*/*/*server.sqlog* --group scheduler --regex "\/.*_(?P<scheduler>[A-Za-z-]+)\/(?P<rep>[0-9]+)\/.*sqlog.*" -o '{{.RESULTS}}/sct.pdf'
 
   plot-ack-paper:
     desc: Plot Figure 4 (b) with the data shown in the paper.
