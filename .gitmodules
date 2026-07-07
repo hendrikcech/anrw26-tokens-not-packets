@@ -1,8 +1,0 @@
-[submodule "quiche"]
-	path = quiche
-	url = git@gitlab.lrz.de:cm/quiche.git
-	branch = frame-scheduler
-[submodule "quicheperf"]
-	path = quicheperf
-	url = git@gitlab.lrz.de:cm/quicheperf.git
-	branch = main

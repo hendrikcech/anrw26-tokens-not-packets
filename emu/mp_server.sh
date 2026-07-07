@@ -52,9 +52,8 @@ main() {
 
     parse "$@"
 
-    CERT="${BASE}/../quicheperf/src/cert.crt"
-    KEY="${BASE}/../quicheperf/src/cert.key"
-
+    CERT="${BASE}/cert.crt"
+    KEY="${BASE}/cert.key"
 
     if [ "$MODE" = 'perf' ]; then
         execute "$(cmd_perf)"
