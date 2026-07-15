@@ -309,7 +309,7 @@ def main():
     # TODO: check if max stream data / max data is a problem
 
     config = EXPERIMENTS[args.experiment]
-    config["repetition"] = [args.reps]
+    config["repetition"] = list(range(args.reps))
 
     if run_config(args.user, args.results, args.experiment, config, args.continue_on_error):
         sys.exit(1)

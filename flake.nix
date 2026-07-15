@@ -85,15 +85,6 @@
 
       in
       {
-        # packages = {
-        #   default = quicheperf_pkg;
-        #   quicheperf = quicheperf_pkg;
-        # };
-
-        # apps.default = flake-utils.lib.mkApp {
-        #   drv = quicheperf_pkg;
-        # };
-
         devShells.default = pkgs.mkShell {
           inputsFrom = [ quicheperf_pkg ];
           packages = with pkgs; [
