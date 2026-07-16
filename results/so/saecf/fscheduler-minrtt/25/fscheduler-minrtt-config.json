@@ -1,0 +1,18 @@
+{
+    "bw": [
+        10,
+        10
+    ],
+    "queue": [
+        1000,
+        1000
+    ],
+    "repetition": 25,
+    "rtt": [
+        10,
+        20
+    ],
+    "scheduler": "fscheduler-minrtt",
+    "sizes": 100000,
+    "streams": 16
+}

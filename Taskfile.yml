@@ -11,6 +11,7 @@ tasks:
      cmds:
        - task: plot-sct-paper
        - task: plot-ack-paper
+       - task: plot-so-paper
 
   plot-sct-paper:
     desc: Plot Figure 4 (a) with the data shown in the paper.
@@ -23,6 +24,12 @@ tasks:
     cmds:
       - mkdir -p '{{.RESULTS}}'
       - python3 figures/stream_completion_time.py '{{.RESULTS}}'/ack-paper/25-10_10-10_*,fscheduler*_100000/*/*server.sqlog* --regex '{{.ACK_REGEX}}' --group scheduler rtt bw bytes --hide-ylabel -o '{{.RESULTS}}/ack.pdf'
+
+  plot-so-paper:
+    desc: Plot Figure 3 with the data shown in the paper.
+    cmds:
+      - mkdir -p '{{.RESULTS}}'
+      - python3 figures/scheduling_overhead_figures.py '{{.RESULTS}}'/so/*/*/*/*timestamps*.csv* --regex "\/(?P<network>[^\/]+)\/(?P<scheduler>[^\/]+)\/(?P<rep>[0-9]+)\/.*timestamps.*" -o '{{.RESULTS}}/so.pdf'
 
   # 1. Run the measurements ---
   measure-all:
