@@ -65,7 +65,7 @@ main() {
     # set. quiche writes to this exact path; quicheperf writes to a sibling file
     # with a "quicheperf_" prefix on the basename.
     if [ "$TIMESTAMP" = 'true' ]; then
-        export TIMESTAMP_LOG="$STDERRDIR/$(date +%y%m%dT%H%M%S)-client.csv"
+        export TIMESTAMP_LOG="$STDERRDIR/$(date +%y%m%dT%H%M%S)-client-timestamps.csv"
     fi
 
     if [ "$MODE" = 'perf' ]; then

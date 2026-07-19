@@ -60,14 +60,15 @@ tasks:
   mn-run-timestamp:*:
     desc: Run a specific experiment with mn_runner.py and timestamp logging enabled; deletes previous experiment results
     vars:
-      EXPERIMENT: '{{index .MATCH 0}}'
-      EXP_PATH: '{{joinPath .RESULTS .EXPERIMENT}}'
+      EXPERIMENT: "{{index .MATCH 0}}"
+      TS_RESULTS: '{{joinPath .RESULTS "timestamp"}}'
+      EXP_PATH: "{{joinPath .TS_RESULTS .EXPERIMENT}}"
       USER:
         sh: whoami
     prompt: Really delete '{{.EXP_PATH}}' and run mn_runner.py '{{.EXPERIMENT}}' --timestamp?
     cmds:
       - rm -rf '{{.EXP_PATH}}' || true
-      - sudo python3 emu/mn_runner.py '{{.USER}}' '{{.EXPERIMENT}}' --results '{{.RESULTS}}' --reps 30 --timestamp
+      - sudo python3 emu/mn_runner.py '{{.USER}}' '{{.EXPERIMENT}}' --results '{{.TS_RESULTS}}' --reps 30 --timestamp
 
   # --- 3. Plot the data from the emulation ---
   plot-sct-emu:
@@ -85,5 +86,14 @@ tasks:
       - mkdir -p '{{.RESULTS}}'
       - python3 figures/stream_completion_time.py '{{.RESULTS}}'/ack/25-10_10-10_*,fscheduler*_100000/*/*server.sqlog* --regex '{{.ACK_REGEX}}' --group scheduler rtt bw bytes --hide-ylabel -o '{{.RESULTS}}/ack.pdf'
     preconditions:
-      - sh: test -d '{{.RESULTS}}/ack' 
-        msg: 'Run task mn-run:ack to generate data'
+      - sh: test -d '{{.RESULTS}}/ack'
+        msg: "Run task mn-run:ack to generate data"
+
+  plot-timestamp-emu:
+    desc: Plot the timestamp overhead of your own emulation run from `task mn-run:timestamp`
+    cmds:
+      - mkdir -p '{{.RESULTS}}'
+      - python3 figures/scheduling_overhead_figures.py '{{.RESULTS}}'/timestamp/*/*/*/*timestamps*.csv* --regex "\/(?P<network>[^\/]+)\/(?P<scheduler>[^\/]+)\/(?P<rep>[0-9]+)\/.*timestamps.*" -o '{{.RESULTS}}/timestamp/so.pdf'
+    preconditions:
+      - sh: test -d '{{.RESULTS}}/timestamp'
+        msg: "Run task mn-run:timestamp to generate data"
