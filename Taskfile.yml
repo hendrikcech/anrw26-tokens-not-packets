@@ -50,6 +50,25 @@ tasks:
       - rm -rf '{{.EXP_PATH}}' || true
       - sudo python3 emu/mn_runner.py '{{.USER}}' '{{.EXPERIMENT}}' --results '{{.RESULTS}}' --reps 30
 
+  # --- 2b. Run the scheduler experiments with timestamp (scheduling overhead) logging ---
+  measure-scheduler-timestamps:
+     desc: Run the stream (sct) and packet (pkt) scheduler experiments with timestamp logging enabled
+     cmds:
+       - task: mn-run-timestamp:sct
+       - task: mn-run-timestamp:pkt
+
+  mn-run-timestamp:*:
+    desc: Run a specific experiment with mn_runner.py and timestamp logging enabled; deletes previous experiment results
+    vars:
+      EXPERIMENT: '{{index .MATCH 0}}'
+      EXP_PATH: '{{joinPath .RESULTS .EXPERIMENT}}'
+      USER:
+        sh: whoami
+    prompt: Really delete '{{.EXP_PATH}}' and run mn_runner.py '{{.EXPERIMENT}}' --timestamp?
+    cmds:
+      - rm -rf '{{.EXP_PATH}}' || true
+      - sudo python3 emu/mn_runner.py '{{.USER}}' '{{.EXPERIMENT}}' --results '{{.RESULTS}}' --reps 30 --timestamp
+
   # --- 3. Plot the data from the emulation ---
   plot-sct-emu:
     desc: Plot the data of your own emulation run from `task mn-run:sct`

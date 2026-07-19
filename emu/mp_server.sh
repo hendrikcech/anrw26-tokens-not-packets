@@ -5,6 +5,7 @@ set -eu
 parse() {
 HELP="(cat <<EOF
 --dry    Print the quicheperf command
+--timestamp  Enable send-path timestamp logging (sets TIMESTAMP_LOG)
 -h|--help   Print this help message
 --      Pass following arguments to quicheperf
 EOF)"
@@ -12,9 +13,11 @@ EOF)"
     QUICHEPERF_ARGS=''
     DRY='false'
     MODE='perf'
+    TIMESTAMP='false'
     while [[ "$#" -gt 0 ]]; do
     case $1 in
         --dry) DRY='true'; shift ;;
+        --timestamp) TIMESTAMP='true'; shift ;;
         -h|--help) echo "$HELP"; exit 0 ;;
         --) shift; QUICHEPERF_ARGS="$@"; break ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
@@ -54,6 +57,13 @@ main() {
 
     CERT="${BASE}/cert.crt"
     KEY="${BASE}/cert.key"
+
+    # quicheperf and quiche both enable timestamp logging when TIMESTAMP_LOG is
+    # set. quiche writes to this exact path; quicheperf writes to a sibling file
+    # with a "quicheperf_" prefix on the basename.
+    if [ "$TIMESTAMP" = 'true' ]; then
+        export TIMESTAMP_LOG="$STDERRDIR/$(date +%y%m%dT%H%M%S)-server.csv"
+    fi
 
     if [ "$MODE" = 'perf' ]; then
         execute "$(cmd_perf)"

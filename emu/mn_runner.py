@@ -64,7 +64,7 @@ def format_config(dir_fmt, params):
             params_str[k] = v
     return dir_fmt.format(**params_str)
 
-def run_config(user, results_dir, experiment_name, config, continue_on_error):
+def run_config(user, results_dir, experiment_name, config, continue_on_error, timestamp):
     Cleanup.cleanup()
 
     os.makedirs(results_dir, exist_ok=True)
@@ -92,11 +92,11 @@ def run_config(user, results_dir, experiment_name, config, continue_on_error):
 
     test_durations = []
     for i, test_config in enumerate(test_configs):
-        if run_test_config(config, dir_fmt, base_path, user, test_durations, test_configs, i, test_config, continue_on_error):
+        if run_test_config(config, dir_fmt, base_path, user, test_durations, test_configs, i, test_config, continue_on_error, timestamp):
             return True
     return False
 
-def run_test_config(config, dir_fmt, base_path, user, test_durations, test_configs, i, test_config, continue_on_error):
+def run_test_config(config, dir_fmt, base_path, user, test_durations, test_configs, i, test_config, continue_on_error, timestamp):
     test_start_ts = time.time()
 
     params = dict([(k,v) for k,v in zip(config.keys(), test_config)])
@@ -117,7 +117,7 @@ def run_test_config(config, dir_fmt, base_path, user, test_durations, test_confi
     print(f"\n#### [{i+1}/{len(test_configs)}] ETR={int(etr_min):02d}:{int(etr_sec):02d} min, test {test_name} {params}")
 
     try:
-        failed = run_test(results_path, user, params)
+        failed = run_test(results_path, user, params, timestamp)
     finally:
         finalize_results(results_path, user, test_name)
 
@@ -135,11 +135,11 @@ def run_test_config(config, dir_fmt, base_path, user, test_durations, test_confi
         os.makedirs(failed_path, exist_ok=True)
         shutil.move(results_path, failed_path)
         
-        run_test_config(config, dir_fmt, base_path, user, test_durations, test_configs, i, test_config, continue_on_error)
+        run_test_config(config, dir_fmt, base_path, user, test_durations, test_configs, i, test_config, continue_on_error, timestamp)
         
     
 
-def run_test(results_path, user, params):
+def run_test(results_path, user, params, timestamp):
     # Write the test-specific config to the result directory
     with open(f"{results_path}/config.json", "w") as f:
         json.dump(params, f, indent=4, sort_keys=True)
@@ -181,9 +181,13 @@ def run_test(results_path, user, params):
     #                          "-Z", user])
     p_tcpdump = None
 
+    # Passed to the mp_*.sh wrappers (before "--"), not to quicheperf itself.
+    # The wrappers set a per-role TIMESTAMP_LOG, which quiche/quicheperf pick up.
+    script_args = ["--timestamp"] if timestamp else []
+
     base_dir = os.path.dirname(os.path.realpath(__file__))
-    server_cmd = ["sudo", "-u", user, "-E", "-s", os.path.join(base_dir, "mp_server.sh"), "--"] + server_quicheperf_args
-    client_cmd = ["sudo", "-u", user, "-E", "-s", os.path.join(base_dir, "mp_client.sh"), "--"] + client_quicheperf_args
+    server_cmd = ["sudo", "-u", user, "-E", "-s", os.path.join(base_dir, "mp_server.sh")] + script_args + ["--"] + server_quicheperf_args
+    client_cmd = ["sudo", "-u", user, "-E", "-s", os.path.join(base_dir, "mp_client.sh")] + script_args + ["--"] + client_quicheperf_args
 
     p_server = server.popen(server_cmd, env=server_env)
     time.sleep(1)
@@ -279,6 +283,23 @@ EXPERIMENTS = dict(
         sizes = [100000],
     ),
 
+    # Packet-scheduler counterpart of `sct`: same topology/workload, but
+    # comparing the packet multipath schedulers (--pscheduler) instead of the
+    # frame schedulers. Intended to be run with --timestamp to capture the
+    # per-call scheduling overhead.
+    pkt = dict(
+        # --- Mininet Topology (mirrors sct) ---
+        rtt = [[10, 25]],
+        loss = [[0, 0]],
+        bw = [[10, 10]],
+        queue = [[1000, 1000]],
+
+        # --- quiche settings ---
+        scheduler = ["pscheduler-minrtt", "pscheduler-roundrobin", "pscheduler-ecf"],
+        streams = [16],
+        sizes = [100000],
+    ),
+
     ack = dict(
         # --- Mininet Topology ---
         rtt = [[25, 10]],
@@ -304,6 +325,7 @@ def main():
     parser.add_argument("--reps", help="How often to repeat the experiment", type=int, default=30)
     parser.add_argument("--results", help="The top-level results directory", default="results")
     parser.add_argument("--continue-on-error", help="Continue on error", action="store_true", default=False)
+    parser.add_argument("--timestamp", help="Enable send-path timestamp logging (sets TIMESTAMP_LOG for client and server)", action="store_true", default=False)
     args = parser.parse_args()
 
     # TODO: check if max stream data / max data is a problem
@@ -311,7 +333,7 @@ def main():
     config = EXPERIMENTS[args.experiment]
     config["repetition"] = list(range(args.reps))
 
-    if run_config(args.user, args.results, args.experiment, config, args.continue_on_error):
+    if run_config(args.user, args.results, args.experiment, config, args.continue_on_error, args.timestamp):
         sys.exit(1)
 
 if __name__ == '__main__':
