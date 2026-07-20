@@ -75,7 +75,7 @@ tasks:
     desc: Plot the data of your own emulation run from `task mn-run:sct`
     cmds:
       - mkdir -p '{{.RESULTS}}'
-      - python3 figures/stream_completion_time.py '{{.RESULTS}}'/sct/10-100*/*/*server.sqlog* --group scheduler --regex "\/.*_(?P<scheduler>[A-Za-z-]+)\/(?P<rep>[0-9]+)\/.*sqlog.*" -o '{{.RESULTS}}/sct_10-100.pdf'
+      - python3 figures/stream_completion_time.py '{{.RESULTS}}'/sct/*/*/*server.sqlog* --group scheduler --regex "\/(?P<scheduler>[A-Za-z-]+)\/(?P<rep>[0-9]+)\/.*sqlog.*" -o '{{.RESULTS}}/sct_10-100.pdf'
     preconditions:
       - sh: test -d '{{.RESULTS}}/sct' 
         msg: 'Run task mn-run:sct to generate data'
