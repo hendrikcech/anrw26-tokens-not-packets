@@ -10,18 +10,21 @@ If you use this repository or dataset in your research, please cite our paper:
 
 ```bibtex
 @inproceedings{cech2026tokens,
-  author={Cech, Hendrik and Bokelmann, Patrick and Mohan, Nitinder},
-  title={Tokens, Not Packets: Rethinking the Multipath QUIC Scheduling Interface},
-  year={2026},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
-  url = {https://doi.org/10.1145/3822163.3827925},
-  doi = {10.1145/3822163.3827925},
-  abstract = {The Multipath QUIC extension has enabled a growing class of stream-aware schedulers that exploit QUIC’s multiplexed streams, mixed reliable and unreliable delivery, and explicit control frames. Progress on these ideas is bottlenecked by an interface inherited from Multipath TCP, in which the scheduler is a function called during packet generation to pick a path. This coupling yields invasive, library-specific scheduler implementations, hinders application-steered scheduling, and makes fair cross-scheduler comparison impractical. We present an up-front, token-based MPQUIC scheduling interface designed primarily for research use, guided by three design choices: unified up-front decisions that address path selection, stream assignment, and duplication jointly; inspectability of scheduling policy as persistent data structures; and mechanism safety through a boundary that preserves protocol invariants. The scheduler reads transport state through a mediating ConnState object and writes policy into per-path, multi-level queues of abstract tokens that the library drains into packets. We prototype the interface in Cloudflare’s quiche, reproduce published scheduler behavior, and demonstrate a new degree of freedom—explicit control frame routing—that reduces median stream completion time by 138 ms in our evaluation.},
-  booktitle = {Proceedings of the 2026 Applied Networking Research Workshop},
-  keywords = {MPQUIC, Multipath, QUIC, Scheduling, Scheduler},
-  location = {Vienna, Austria},
-  series = {ANRW '26}
+author = {Cech, Hendrik and Bokelmann, Patrick and Mohan, Nitinder},
+title = {Tokens, Not Packets: Rethinking the Multipath QUIC Scheduling Interface},
+year = {2026},
+isbn = {9798400728761},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3822163.3827925},
+doi = {10.1145/3822163.3827925},
+abstract = {The Multipath QUIC extension has enabled a growing class of stream-aware schedulers that exploit QUIC's multiplexed streams, mixed reliable and unreliable delivery, and explicit control frames. Progress on these ideas is bottlenecked by an interface inherited from Multipath TCP, in which the scheduler is a function called during packet generation to pick a path. This coupling yields invasive, library-specific scheduler implementations, hinders application-steered scheduling, and makes fair cross-scheduler comparison impractical. We present an up-front, token-based MPQUIC scheduling interface designed primarily for research use, guided by three design choices: unified up-front decisions that address path selection, stream assignment, and duplication jointly; inspectability of scheduling policy as persistent data structures; and mechanism safety through a boundary that preserves protocol invariants. The scheduler reads transport state through a mediating ConnState object and writes policy into per-path, multi-level queues of abstract tokens that the library drains into packets. We prototype the interface in Cloudflare's quiche, reproduce published scheduler behavior, and demonstrate a new degree of freedom—explicit control frame routing—that reduces median stream completion time by 138 ms in our evaluation.},
+booktitle = {Proceedings of the 2026 Applied Networking Research Workshop},
+pages = {140–146},
+numpages = {7},
+keywords = {MPQUIC, multipath, QUIC, scheduling, scheduler},
+location = {Hilton Park, Vienna, Austria},
+series = {ANRW '26}
 }
 ```
 
