@@ -29,7 +29,7 @@ tasks:
     desc: Plot Figure 3 with the data shown in the paper.
     cmds:
       - mkdir -p '{{.RESULTS}}'
-      - python3 figures/scheduling_overhead_figures.py '{{.RESULTS}}'/so/*/*/*/*timestamps*.csv* --regex "\/(?P<network>[^\/]+)\/(?P<scheduler>[^\/]+)\/(?P<rep>[0-9]+)\/.*timestamps.*" -o '{{.RESULTS}}/so.pdf'
+      - python3 figures/scheduling_overhead_figures.py '{{.RESULTS}}'/so-paper/*/*/*/*timestamps*.csv* --regex "\/(?P<network>[^\/]+)\/(?P<scheduler>[^\/]+)\/(?P<rep>[0-9]+)\/.*timestamps.*" -o '{{.RESULTS}}/so.pdf'
 
   # 1. Run the measurements ---
   measure-all:
