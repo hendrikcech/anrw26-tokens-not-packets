@@ -1,0 +1,24 @@
+{
+    "bw": [
+        10,
+        10
+    ],
+    "loss": [
+        0,
+        0
+    ],
+    "max_data": 64000000,
+    "max_stream_data": 2000000,
+    "queue": [
+        1000,
+        1000
+    ],
+    "repetition": 17,
+    "rtt": [
+        25,
+        10
+    ],
+    "scheduler": "fscheduler-minrtt,fscheduler-cffast",
+    "sizes": 100000,
+    "streams": 16
+}

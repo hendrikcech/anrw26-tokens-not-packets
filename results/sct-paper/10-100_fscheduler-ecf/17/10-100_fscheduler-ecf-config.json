@@ -1,0 +1,22 @@
+{
+    "bw": [
+        10,
+        10
+    ],
+    "loss": [
+        0,
+        0
+    ],
+    "queue": [
+        1000,
+        1000
+    ],
+    "repetition": 17,
+    "rtt": [
+        10,
+        100
+    ],
+    "scheduler": "fscheduler-ecf",
+    "sizes": 100000,
+    "streams": 16
+}
